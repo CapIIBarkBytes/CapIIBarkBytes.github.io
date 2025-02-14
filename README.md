@@ -1,3 +1,3 @@
 # BarkBytes
 
-This is an experimental fork of the main BarkBytes website- for development purposes only
+This is the Bark Bytes website, which also consists of the webapp that will remotely drive the feeder.
