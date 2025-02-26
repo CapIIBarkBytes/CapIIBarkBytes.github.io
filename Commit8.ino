@@ -1,16 +1,21 @@
 #include "SD.h"
-#include "WiFi.h"
-#include "AsyncTCP.h"
-#include "ESPAsyncWebServer.h"
-#include "sqlite3.h"
+#include <WiFi.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <sqlite3.h>
+#include <time.h>
 
-const char* ssid = "router_ssid";
-const char* wifi_password = "wifi-password";
+const char* ssid = "NETGEAR30";
+const char* wifi_password = "perfectskates004";
 
-AsyncWebServer server(80);
+AsyncWebServer server(8080);
 
 sqlite3 *feeder;
 sqlite3_stmt *res;
+
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = -18000;
+const int   daylightOffset_sec = 3600;
 
 const char* data = "Callback function called";
 static int callback(void *data, int argc, char **argv, char **azColName){
@@ -50,26 +55,13 @@ int db_exec(sqlite3 *db, const char *sql) {
    return rc;
 }
 
-String get_wifi_status(int status){
-    switch(status){
-        case WL_IDLE_STATUS:
-        return "WL_IDLE_STATUS";
-        case WL_SCAN_COMPLETED:
-        return "WL_SCAN_COMPLETED";
-        case WL_NO_SSID_AVAIL:
-        return "WL_NO_SSID_AVAIL";
-        case WL_CONNECT_FAILED:
-        return "WL_CONNECT_FAILED";
-        case WL_CONNECTION_LOST:
-        return "WL_CONNECTION_LOST";
-        case WL_CONNECTED:
-        return "WL_CONNECTED";
-        case WL_DISCONNECTED:
-        return "WL_DISCONNECTED";
-    }
-}
-
 void setup() {
+  pinMode(21,OUTPUT);
+  pinMode(22,OUTPUT);
+  pinMode(17,OUTPUT);
+  digitalWrite(17,HIGH);
+  digitalWrite(21,LOW);
+  digitalWrite(22,LOW);
   Serial.begin(9600);
   if(!SD.begin()){
     Serial.println("Card Mount Failed");
@@ -80,17 +72,18 @@ void setup() {
   if (openDb("/sd/feeder.db", &feeder))
      return;
   sqlite3_close(feeder);
-  int status = WL_IDLE_STATUS;
-  Serial.println("\nConnecting");
-  Serial.println(get_wifi_status(status));
   WiFi.begin(ssid, wifi_password);
-  while(status != WL_CONNECTED){
-      delay(500);
-      status = WiFi.status();
-      Serial.println(get_wifi_status(status));
-  }
+  delay(2000);
+  Serial.println((WiFi.localIP()));
   // handle http requests with server.on()
-
+  server.on("/", HTTP_GET, [] (AsyncWebServerRequest *request){
+    digitalWrite(21,HIGH);
+    digitalWrite(22,LOW);
+    delay(1500);
+    digitalWrite(21,LOW);
+    digitalWrite(22,LOW);
+    request->send(200,"text/plain","Hello World");
+  });
   server.begin();
 }
 
