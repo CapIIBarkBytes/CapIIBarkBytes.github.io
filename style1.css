@@ -1,0 +1,140 @@
+html, body, .log-container, #row {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    /*styling*/
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: rgb(244, 193, 84);
+} 
+.log-container {     
+    display: flex;
+    flex-direction: column;     /* sets up entire window in column style, up down */
+}
+#row {         /* creates row layout within column style */
+    display: flex;
+    flex-direction: row;
+    height: 80%;
+}
+.header {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 1% 0;
+    padding-right: 1%;
+    height: 10%;
+    /*styling*/
+    font-size: x-small;
+    background-color: brown;
+    border-bottom: 5px solid white;
+    color: white;
+}
+h1, h2, h3, p {
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 10%;
+}
+h3 {
+    /*styling*/
+    font-size: 200%;
+}
+p {
+    /*styling*/
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: medium;
+    color: brown;
+}
+.log-background {            /* more so handles what's on the right side of the screen */
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    /*styling*/
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bolder;
+    font-size: 320%;
+    color: white;
+}
+.sign-background {            /* more so handles what's on the right side of the screen */
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    /*styling*/
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: bolder;
+    font-size: 250%;
+    color: white;
+}
+
+.log-space {       /* interactive signup/login box on the left side of the window */
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    margin: 0 8% 0 auto;
+    padding: 2% 0 2% 0;
+    width: 35%;
+    height: 85%;
+    /*styling*/
+    background-color: white;
+    color: brown;
+    border: 5px dashed brown;
+    border-radius: 30px;
+}
+.rilo {
+    display: flex;
+    margin: auto;
+    width: 20%;
+    height: auto;
+    /*styling*/
+    cursor: pointer;
+}
+.text {         
+    display: none;        /* initially hides text box until hover */
+    right: 40%;
+    margin: auto;
+    /*styling*/
+    font-size: small;
+}
+.rilo:hover + .text {         /* displays text box of dog speaking when hovered over */
+    display: block;
+}
+#link {         /* link that directs you back to sign up/log in page*/
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 10% 5% 0;
+}
+input {         /* controls both username and password entry */
+    margin: 0 auto 1% auto;
+    padding-left: 3%;
+    width: 90%;
+    height: 10%;
+    /*styling*/
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    border: 1px solid black;
+    border-radius: 20px;
+}
+button {           /* signup/login button depending on current tab*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 12%;
+    /*styling*/
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: large;
+    font-weight: bold;
+    background-color: rgb(244, 193, 84);
+    color: white;
+    border: 2px solid brown;
+    border-radius: 30px;
+    margin: auto;
+    cursor: pointer;
+}
+button:hover {       /* brightens color of signup/login button when hovered over */
+    /*styling*/
+    background-color: rgb(249, 218, 151);
+}
+.bottom-border {     /* border with picture, for aesthetic purposes */
+    bottom: 0;
+    height: 20%;
+    /*styling*/
+    background-image: url('images/treats.png');
+    border-top: 5px solid white;
+}
