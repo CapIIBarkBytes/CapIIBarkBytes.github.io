@@ -1,0 +1,8 @@
+version: "3"
+agent:
+  authtoken: 2sGt5r1PQNz7vVV4DEyMUopsE71_WiZGGvKCFCBZu2RSy5HP
+endpoints:
+  - name: barkbytes
+    url: https://famous-smoothly-sunbeam.ngrok-free.app
+    upstream:
+      url: 192.168.4.1:8080
