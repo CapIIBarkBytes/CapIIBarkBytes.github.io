@@ -27,53 +27,64 @@
         </div>
     </nav>
     
-    <!-- This is a script to display the data from the Schedule DB as a table. Source: stackoverflow
-    //As backend to call SQLite DB is not available yet this is commented until further notice.
+<!-- This is a script to display the data from the Schedule DB as a table. Source: stackoverflow
+//As backend to call SQLite DB is not available yet this is commented until further notice.
+//Update: added possible solution for selecting rows on the website
     
-    <script type="text/javascript">
-	var path = "http://alasql.org/demo/016sqlite/Chinook_Sqlite.sqlite"; //Replace with path to SQLite DB
-	var xhr = new XMLHttpRequest();
-	xhr.open('GET', path, true);
-	xhr.responseType = 'arraybuffer';
+<script type="text/javascript">
+var path = "http://alasql.org/demo/016sqlite/Chinook_Sqlite.sqlite"; //Replace with path to SQLite DB
+var xhr = new XMLHttpRequest();
+xhr.open('GET', path, true);
+xhr.responseType = 'arraybuffer';
 	
-	xhr.onload = function(e) {
+xhr.onload = function(e) {
 	  var uInt8Array = new Uint8Array(this.response);
 	  var db = new SQL.Database(uInt8Array);
 	  //var contents = db.exec("SELECT name FROM sqlite_master where type='table'");
 	  var contents = db.exec("SELECT * FROM Schedule");
-	  //alert(JSON.stringify(contents));
 	
 	  var table_string = '<table>';
-	  if (contents) {
-	    table_string += '<tr>';
-	    for (var index in contents[0].columns) {
-	      table_string += '<th>' + contents[0].columns[index] + '</th>';
-	    } 
-	    table_string += '</tr>';
-	    for (var row_index in contents[0].values) {
-	      table_string += '<tr>';
-	      for (var col_index in contents[0].values[row_index]) {
-	        table_string += '<td>' + contents[0].values[row_index][col_index] + '</td>';
-	      }
-	      table_string += '</tr>';
-	    }
+    if (contents) {
+          table_string += '<tr>';
+          for (var index in contents[0].columns) {
+              table_string += '<th>' + contents[0].columns[index] + '</th>';
+          }
+          table_string += '</tr>';
+    
+          for (var row_index in contents[0].values) {
+              table_string += '<tr onclick="selectRow(event)">';
+              for (var col_index in contents[0].values[row_index]) {
+                  table_string += '<td>' + contents[0].values[row_index][col_index] + '</td>';
+              }
+              table_string += '</tr>';
+          }
+   	  }
 
-	    }
-
-	table_string += '</table>';
+			table_string += '</table>';
 	    //alert(table_string);
-	    document.getElementById("res").innerHTML = table_string;    
-	}
-	xhr.send();
+	    document.getElementById("res").innerHTML = table_string;
+}
+xhr.send();
 
-	</script>
-	-->
+function selectRow(event) {
+       var row = event.currentTarget;
+       var cells = row.getElementsByTagName("td");
+       var rowData = [];
+       for (var i = 0; i < cells.length; i++) {
+           rowData.push(cells[i].innerText);
+       }
+    
+       localStorage.setItem("selectedRow", JSON.stringify(rowData));
+       window.location.href = "createschedule.html"; // Redirect to the form page
+}
+</script>
+-->
 
-    <main id="content">
-        <section id="home" class="page active">
-            <h1>Edit schedule</h1>
-            <p>Choose a schedule to edit</p>
-            <p id="res"></p>
+  <main id="content">
+      <section id="home" class="page active">
+      <h1>Edit schedule</h1>
+      <p>Choose a schedule to edit</p>
+      <p id="res"></p>
 			<p>
 			<a href="createschedule.html">
     				<button>Next</button>
@@ -84,9 +95,9 @@
 			<p style="color: red;">You will select an entry from the ones displayed, and upon clicking next you will be transported</p>
 			<p style="color: red;">to the Create Schedule page with that entry's information already filled in.</p>
 	</section>	
-    </main>
+  </main>
 
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
