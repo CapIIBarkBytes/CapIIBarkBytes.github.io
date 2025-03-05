@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Dog Feeder Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav id="mainNav">
+        <div class="logo">
+            <a href="#">
+                <img src="https://img.freepik.com/free-vector/cute-australian-shepherd-dog-cartoon-vector-icon-illustration-animal-nature-icon-isolated-flat_138676-12952.jpg?t=st=1740161020~exp=1740164620~hmac=5743745bec7aba68dd2858b5139186b1fca9de7d739ee2724fa27f4d0ee1f0cb&w=900" alt="Dog">  </a>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="#" data-page="home">Home</a></li>
+            <li class="nav-item"><a href="#" data-page="devices">Devices</a></li>
+            <li class="nav-item"><a href="#" data-page="products">Products</a></li>
+            <li class="nav-item"><a href="#" data-page="about">About</a></li>
+            <li class="nav-item"><a href="#" data-page="contact">Contact</a></li>
+            <li class="nav-item"><a href="#" data-page="account">My Account</a></li>
+        </ul>
+        <div class="burger">
+          <div class="line1"></div>
+          <div class="line2"></div>
+          <div class="line3"></div>
+        </div>
+    </nav>
+    
+<!-- This is a script to display the data from the Schedule DB as a table. Source: stackoverflow
+//As backend to call SQLite DB is not available yet this is commented until further notice.
+//Update: added possible solution for selecting rows on the website
+    
+<script type="text/javascript">
+var path = "http://alasql.org/demo/016sqlite/Chinook_Sqlite.sqlite"; //Replace with path to SQLite DB
+var xhr = new XMLHttpRequest();
+xhr.open('GET', path, true);
+xhr.responseType = 'arraybuffer';
+	
+xhr.onload = function(e) {
+	  var uInt8Array = new Uint8Array(this.response);
+	  var db = new SQL.Database(uInt8Array);
+	  //var contents = db.exec("SELECT name FROM sqlite_master where type='table'");
+	  var contents = db.exec("SELECT * FROM Schedule");
+	
+	  var table_string = '<table>';
+    if (contents) {
+          table_string += '<tr>';
+          for (var index in contents[0].columns) {
+              table_string += '<th>' + contents[0].columns[index] + '</th>';
+          }
+          table_string += '</tr>';
+    
+          for (var row_index in contents[0].values) {
+              table_string += '<tr onclick="selectRow(event)">';
+              for (var col_index in contents[0].values[row_index]) {
+                  table_string += '<td>' + contents[0].values[row_index][col_index] + '</td>';
+              }
+              table_string += '</tr>';
+          }
+   	  }
+
+			table_string += '</table>';
+	    //alert(table_string);
+	    document.getElementById("res").innerHTML = table_string;
+}
+xhr.send();
+
+function selectRow(event) {
+       var row = event.currentTarget;
+       var cells = row.getElementsByTagName("td");
+       var rowData = [];
+       for (var i = 0; i < cells.length; i++) {
+           rowData.push(cells[i].innerText);
+       }
+    
+       localStorage.setItem("selectedRow", JSON.stringify(rowData));
+       window.location.href = "createschedule.html"; // Redirect to the form page
+}
+</script>
+-->
+
+  <main id="content">
+      <section id="home" class="page active">
+      <h1>Edit schedule</h1>
+      <p>Choose a schedule to edit</p>
+      <p id="res"></p>
+			<p>
+			<a href="createschedule.html">
+    				<button>Next</button>
+			</a>
+			<p>&nbsp;</p>
+			<p style="color: red;">Please note- Editing functionality has not been implemented yet!</p>
+			<p style="color: red;">However, when it is implemented, the data from the Schedule DB will be displayed as a table here.</p>
+			<p style="color: red;">You will select an entry from the ones displayed, and upon clicking next you will be transported</p>
+			<p style="color: red;">to the Create Schedule page with that entry's information already filled in.</p>
+	</section>	
+  </main>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
