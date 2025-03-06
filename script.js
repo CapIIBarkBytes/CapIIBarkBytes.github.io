@@ -32,7 +32,28 @@ navLinks.addEventListener('click', (event) => {
         }
     }
 });
+const dispenseButtons = document.querySelectorAll('.dispense-button');
+dispenseButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const amount = button.dataset.amount;
+        const url = `https://famous-smoothly-sunbeam.ngrok-free.app/feed?amount=${amount}`;
 
+        // Make the HTTPS request (using the fetch API or XMLHttpRequest)
+        fetch(url)
+            .then(response => {
+                // Handle the response from the server
+                if (response.ok) {
+                    alert(`Dispensing ${amount} amount!`);
+                } else {
+                    alert(`Error: ${response.status}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while making the request.');
+            });
+    });
+});
 
 
 // Initial page load (optional): Show the home page by default
