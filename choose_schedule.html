@@ -63,7 +63,7 @@ xhr.onload = function(e) {
 
 			table_string += '</table>';
 	    //alert(table_string);
-	    document.getElementById("res").innerHTML = table_string;
+	    document.getElementById("res").textContent = table_string;
 }
 xhr.send();
 
@@ -72,10 +72,10 @@ function selectRow(event) {
        var cells = row.getElementsByTagName("td");
        var rowData = [];
        for (var i = 0; i < cells.length; i++) {
-           rowData.push(cells[i].innerText);
+           rowData.push(cells[i].textContent);
        }
     
-       localStorage.setItem("selectedRow", JSON.stringify(rowData));
+       sessionStorage.setItem("selectedRow", JSON.stringify(rowData));
        window.location.href = "createschedule.html"; // Redirect to the form page
 }
 </script>
