@@ -52,10 +52,16 @@
     </script>
 </head>
 <body>
+    <div class="overall-nav">
     <nav id="mainNav">
         <div class="logo">
+<<<<<<< Updated upstream
             <a href="https://capiibarkbytes.github.io/">
                 <img src="https://img.freepik.com/free-vector/cute-australian-shepherd-dog-cartoon-vector-icon-illustration-animal-nature-icon-isolated-flat_138676-12952.jpg?t=st=1740161020~exp=1740164620~hmac=5743745bec7aba68dd2858b5139186b1fca9de7d739ee2724fa27f4d0ee1f0cb&w=900" alt="Dog">  </a>
+=======
+            <a href="#">
+                <img src="images/img5.webp" alt="Dog">  </a>
+>>>>>>> Stashed changes
         </div>
         <ul class="nav-links">
             <li class="nav-item"><a href="https://capiibarkbytes.github.io/" data-page="https://capiibarkbytes.github.io/">Home</a></li>
@@ -72,9 +78,11 @@
           <div class="line3"></div>
         </div>
     </nav>
+    </div>
 
     <main id="content">
         <section id="home" class="page active">
+<<<<<<< Updated upstream
             <h1>Create a schedule</h1>
             <p>Create a new feeding schedule for your pet (or edit an existing one)</p>
             <p><hr /></p>
@@ -96,13 +104,39 @@
         		<p>At what times should the feeder run?</p>
         		<div id="timeContainer">
             		<p><input type="time" name="times[]" class="time-input"></p>
+=======
+            <h1 style="color: brown;">CREATE A SCHEDULE</h1>
+            <p style="font-size: large; color: brown;">Create a new feeding schedule for your pet (or edit an existing one)</p>
+            <p></p>
+			<form action="submit_schedule.js" method="post" style="font-weight: bolder;">
+				<p>Enter schedule name: <input name="schedule_name" type="text" class="input-box"/></p>
+				<p>Name of pet: <input name="dog_name" type="text" class="input-box"/></p>
+				<p><input name="Checkbox1" type="checkbox" /> Apply schedule immediately?</p>
+				<p>On what days should the feeder run (this repeats)?</p>
+				<p><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"> Every Day</p>
+				<p><input type="checkbox" name="days" value="0"> Sunday</p>
+        		<p><input type="checkbox" name="days" value="1"> Monday</p>
+        		<p><input type="checkbox" name="days" value="2"> Tuesday</p>
+        		<p><input type="checkbox" name="days" value="3"> Wednesday</p>
+        		<p><input type="checkbox" name="days" value="4"> Thursday</p>
+        		<p><input type="checkbox" name="days" value="5"> Friday</p>
+        		<p><input type="checkbox" name="days" value="6"> Saturday</p>
+        		<p>How much food should be dispensed during each run?</p>
+        		<p>Enter amount here (in mililiters (mL)): <input name="food_amount" type="number" class="input-box" /></p>
+        		<p>At what times should the feeder run?</p>
+        		<div id="timeContainer">
+            		<p><input type="time" name="times[]" class="input-box"></p>
+>>>>>>> Stashed changes
         		</div>
-        		<p><input type="button" value="Add Another Time" onclick="addTimeInput()" /></p>
-        		<p><input name="submit_schedule" type="submit" value="Submit New Schedule" /></p>
+        		<p><input type="button" value="Add Another Time" onclick="addTimeInput()" class="more-buttons" /></p>
+        		<p><input name="submit_schedule" type="submit" value="Submit New Schedule" class="more-buttons" /></p>
     		</form>
     		<p>&nbsp;</p>
 		</section>
 	</main>
+
+    <div class="bottom-border"></div>
+
 			
 	<script src="script.js"></script>
 </body>

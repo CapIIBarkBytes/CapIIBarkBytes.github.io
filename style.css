@@ -4,7 +4,30 @@ nav {
     justify-content: space-between; /* Space logo and links */
     align-items: center; /* Vertically align items */
     padding: 1rem;
-    background-color: #f0f0f0; /* Light gray background */
+    background-color: white; /* Light gray background */ /* changed to white */
+    border-radius: 10px; /* rounded border eges */
+    margin: .5% 0 .5% 0;
+    border: solid 5px brown;
+}
+nav:hover {
+    border: dashed 5px brown;
+}
+body {
+    height: 100%;
+    background-color: rgb(244, 193, 84);
+    color: white;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 0;
+    font-family:'Courier New', Courier, monospace;
+}
+#home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .logo img {
@@ -24,16 +47,19 @@ nav {
 
 .nav-links a {
     text-decoration: none;
-    color: #333; /* Dark gray text */
+    color: brown; /* Dark gray text */
     font-weight: bold;
+    font-size: medium;
     padding: 5px 10px; /* Add some padding around the text */
     border-radius: 5px; /* Round the corners */
     transition: background-color 0.3s, color 0.3s; /* Smooth transitions */
 }
 
 .nav-links a:hover {
-    background-color: #007bff; /* Blue background on hover */
+    background-color: rgb(244, 193, 84); /* Blue background on hover */
+    background-image: url("images/treats.png");
     color: white; /* White text on hover */
+    background-size: cover;
 }
 
 .burger {
@@ -93,7 +119,7 @@ nav {
 
 
 .dispense-button {
-    background-color: #4CAF50; /* Green */
+    background-color: brown; /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -109,4 +135,34 @@ nav {
 
 .dispense-button:hover {
     background-color: #3e8e41; /* Darker green on hover */
+}
+
+.bottom-border {     /* border with picture, for aesthetic purposes */
+    bottom: 0;
+    height: 20%;
+    /*styling*/
+    background-image: url('images/treats.png');
+    border-top: solid 1px brown;
+}
+
+button, .more-buttons {
+    padding: 5px;
+    border: dashed 2px brown;
+    box-sizing: border-box;
+    background-color: white;
+    color: brown;
+    border-radius: 5px;
+
+}
+button:hover, .more-buttons:hover {
+    cursor: pointer;
+    background-color: rgb(244, 193, 84);
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    border: dashed 2px white;
+}
+.input-box {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    border: dashed 2px brown;
 }
