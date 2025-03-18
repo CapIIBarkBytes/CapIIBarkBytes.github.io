@@ -28,73 +28,105 @@
         </div>
     </nav>
     
-<!-- This is a script to display the data from the Schedule DB as a table. Source: stackoverflow
-//As backend to call SQLite DB is not available yet this is commented until further notice.
-//Update: added possible solution for selecting rows on the website
-    
-<script type="text/javascript">
-var path = "http://alasql.org/demo/016sqlite/Chinook_Sqlite.sqlite"; //Replace with path to SQLite DB
-var xhr = new XMLHttpRequest();
-xhr.open('GET', path, true);
-xhr.responseType = 'arraybuffer';
-	
-xhr.onload = function(e) {
-	  var uInt8Array = new Uint8Array(this.response);
-	  var db = new SQL.Database(uInt8Array);
-	  //var contents = db.exec("SELECT name FROM sqlite_master where type='table'");
-	  var contents = db.exec("SELECT * FROM Schedule");
-	
-	  var table_string = '<table>';
-    if (contents) {
-          table_string += '<tr>';
-          for (var index in contents[0].columns) {
-              table_string += '<th>' + contents[0].columns[index] + '</th>';
-          }
-          table_string += '</tr>';
-    
-          for (var row_index in contents[0].values) {
-              table_string += '<tr onclick="selectRow(event)">';
-              for (var col_index in contents[0].values[row_index]) {
-                  table_string += '<td>' + contents[0].values[row_index][col_index] + '</td>';
-              }
-              table_string += '</tr>';
-          }
-   	  }
-
-			table_string += '</table>';
-	    //alert(table_string);
-	    document.getElementById("res").textContent = table_string;
-}
-xhr.send();
-
-function selectRow(event) {
-       var row = event.currentTarget;
-       var cells = row.getElementsByTagName("td");
-       var rowData = [];
-       for (var i = 0; i < cells.length; i++) {
-           rowData.push(cells[i].textContent);
-       }
-    
-       sessionStorage.setItem("selectedRow", JSON.stringify(rowData));
-       window.location.href = "createschedule.html"; // Redirect to the form page
-}
-</script>
--->
-
   <main id="content">
-      <section id="home" class="page active">
-      <h1>Edit schedule</h1>
-      <p>Choose a schedule to edit</p>
-      <p id="res"></p>
-			<p>
-			<a href="createschedule.html">
-    				<button>Next</button>
-			</a>
-			<p>&nbsp;</p>
-			<p style="color: red;">Please note- Editing functionality has not been implemented yet!</p>
-			<p style="color: red;">However, when it is implemented, the data from the Schedule DB will be displayed as a table here.</p>
-			<p style="color: red;">You will select an entry from the ones displayed, and upon clicking next you will be transported</p>
-			<p style="color: red;">to the Create Schedule page with that entry's information already filled in.</p>
+	<section id="home" class="page active">
+	<h1>Edit schedule</h1>
+	<p>Choose a schedule to edit</p>
+	<p>&nbsp;</p>
+	<!-- This is a script to display the data from the Schedule DB as a table. -->
+	<script type="text/javascript">
+	var apiUrl = "https://famous-smoothly-sunbeam.ngrok-free.app/schedule"; // API endpoint
+
+	// Fetch schedule data from the external SQL service
+	fetch(apiUrl)
+	  .then(response => response.json())
+	  .then(data => {
+	      var table_string = '<table id="scheduleTable">';
+	      if (data.length > 0) {
+	          // Create table headers
+	          table_string += '<tr>';
+	          for (var key in data[0]) {
+	              table_string += '<th>' + key + '</th>';
+	          }
+	          table_string += '</tr>';
+
+             	  // Populate table rows
+     	     	  data.forEach(row => {
+   	        	table_string += '<tr onclick="selectRow(event)">';
+   	        	for (var key in row) {
+   	        		table_string += '<td>' + row[key] + '</td>';
+   	           	}
+   	           	table_string += '</tr>';
+   		  });
+   	      }
+   	      table_string += '</table>';
+      
+   	      // Add delete button
+   	      table_string += '<button onclick="deleteRow()">Delete Schedule</button>';
+      
+   	      document.getElementById("res").innerHTML = table_string;
+ 	  })
+	  .catch(error => console.error("Error fetching data:", error));
+
+	var selectedRowData = null; // Store selected row data
+
+	function selectRow(event) {
+	    var table = document.getElementById("scheduleTable");
+	    var rows = table.getElementsByTagName("tr");
+
+	    // Remove highlight from all rows
+	    for (var i = 1; i < rows.length; i++) {
+	        rows[i].style.backgroundColor = "";
+	    }
+
+	    // Highlight selected row
+	    var row = event.currentTarget;
+	    row.style.backgroundColor = "#f0d8c0";
+
+	    // Store row data
+	    var cells = row.getElementsByTagName("td");
+	    selectedRowData = {};
+	    var headers = table.getElementsByTagName("th");
+
+	    for (var i = 0; i < cells.length; i++) {
+	        selectedRowData[headers[i].textContent] = cells[i].textContent;
+	    }
+
+	    // Store in session for later use
+	    sessionStorage.setItem("selectedRow", JSON.stringify(selectedRowData));
+	}
+
+	function deleteRow() {
+	    if (!selectedRowData) {
+	        alert("No row selected.");
+	        return;
+	    }
+
+	    var deleteUrl = apiUrl + "/delete"; // Update this URL to match API
+	    fetch(deleteUrl, {
+	        method: "DELETE",
+	        headers: {
+	            "Content-Type": "application/json"
+	        },
+	        body: JSON.stringify(selectedRowData)
+	    })
+	    .then(response => response.json())
+	    .then(result => {
+	        alert("Schedule entry deleted");
+	        location.reload(); // Refresh the table
+	    })
+	    .catch(error => console.error("Error deleting schedule entry:", error));
+	}
+	</script>
+	<p>&nbsp;</p>
+	<a href="createschedule.html">
+    		<button>Next</button>
+	</a>
+	<p>&nbsp;</p>
+	<p style="color: red;">Please note- Editing functionality has not been fully implemented yet!</p>
+	<p style="color: red;">However, when it is implemented, the data from the Schedule DB will be displayed as a table here.</p>
+	<p style="color: red;">You will select an entry from the ones displayed, and upon clicking next you will be transported</p>
+	<p style="color: red;">to the Create Schedule page with that entry's information already filled in.</p>
 	</section>	
   </main>
 

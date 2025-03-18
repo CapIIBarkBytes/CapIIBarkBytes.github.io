@@ -18,6 +18,37 @@
                 checkboxes[i].checked = source.checked;
             }
         }
+	
+	// This is prototype code made with the help of the internet. May not work.
+	// Loading form data from choose_schedule.html
+	window.onload = function() {
+        	var rowData = JSON.parse(localStorage.getItem("selectedRow"));
+        	if (rowData) {
+        	    document.getElementById("name").value = rowData[0];
+        	    document.getElementById("petname").value = rowData[1];
+		    document.getElementById("immapply").checked = rowData[2] === true;
+		    document.getElementById("sunday").checked = rowData[3] === true;
+		    document.getElementById("monday").checked = rowData[4] === true;
+		    document.getElementById("tuesday").checked = rowData[5] === true;
+		    document.getElementById("wednesday").checked = rowData[6] === true;
+		    document.getElementById("thursday").checked = rowData[7] === true;
+		    document.getElementById("friday").checked = rowData[8] === true;
+		    document.getElementById("saturday").checked = rowData[9] === true;
+        	    document.getElementById("food").value = rowData[10];
+
+		    
+        	    // Handling multiple time values
+        	    let timeArray = rowData[11]; // Assuming time values are stored in index 11 as an array
+        	    if (Array.isArray(timeArray)) {
+        	    let timeContainer = document.getElementById("timeContainer"); // ID of the container
+        	    let timeInputs = timeContainer.getElementsByClassName("time-input"); // Get all time inputs inside the container
+            	    for (let i = 0; i < timeInputs.length; i++) {
+                	    if (timeArray[i]) { // Ensure there's a value to set
+                    	    	timeInputs[i].value = timeArray[i];
+               	    	    }
+           	    }
+        	}
+    	};
     </script>
 </head>
 <body>
@@ -47,24 +78,24 @@
             <h1>Create a schedule</h1>
             <p>Create a new feeding schedule for your pet (or edit an existing one)</p>
             <p><hr /></p>
-			<form action="submit_schedule.js" method="post">
-				<p>Enter schedule name: <input name="schedule_name" type="text" /></p>
-				<p>Name of pet: <input name="dog_name" type="text" /></p>
-				<p><input name="Checkbox1" type="checkbox" /> Apply schedule immediately?</p>
-				<p>On what days should the feeder run (this repeats)?</p>
-				<p><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"> Every Day</p>
-				<p><input type="checkbox" name="days" value="0"> Sunday</p>
-        		<p><input type="checkbox" name="days" value="1"> Monday</p>
-        		<p><input type="checkbox" name="days" value="2"> Tuesday</p>
-        		<p><input type="checkbox" name="days" value="3"> Wednesday</p>
-        		<p><input type="checkbox" name="days" value="4"> Thursday</p>
-        		<p><input type="checkbox" name="days" value="5"> Friday</p>
-        		<p><input type="checkbox" name="days" value="6"> Saturday</p>
+		<form action="submit_schedule.js" method="post">
+			<p>Enter schedule name: <input name="schedule_name" type="text" id="name"/></p>
+			<p>Name of pet: <input name="dog_name" type="text" id="petname"/></p>
+			<p><input name="Checkbox1" type="checkbox" id="immapply"/> Apply schedule immediately?</p>
+			<p>On what days should the feeder run (this repeats)?</p>
+			<p><input type="checkbox" id="selectAll" onclick="toggleSelectAll(this)"> Every Day</p>
+			<p><input type="checkbox" name="days" value="0" id="sunday"> Sunday</p>
+        		<p><input type="checkbox" name="days" value="1" id="monday"> Monday</p>
+        		<p><input type="checkbox" name="days" value="2" id="tuesday"> Tuesday</p>
+        		<p><input type="checkbox" name="days" value="3" id="wednesday"> Wednesday</p>
+        		<p><input type="checkbox" name="days" value="4" id="thursday"> Thursday</p>
+        		<p><input type="checkbox" name="days" value="5" id="friday"> Friday</p>
+        		<p><input type="checkbox" name="days" value="6" id="saturday"> Saturday</p>
         		<p>How much food should be dispensed during each run?</p>
-        		<p>Enter amount here (in mililiters (mL)): <input name="food_amount" type="number" /></p>
+        		<p>Enter amount here (in mililiters (mL)): <input name="food_amount" type="number" id="food"/></p>
         		<p>At what times should the feeder run?</p>
         		<div id="timeContainer">
-            		<p><input type="time" name="times[]"></p>
+            		<p><input type="time" name="times[]" class="time-input"></p>
         		</div>
         		<p><input type="button" value="Add Another Time" onclick="addTimeInput()" /></p>
         		<p><input name="submit_schedule" type="submit" value="Submit New Schedule" /></p>
