@@ -6,71 +6,84 @@
 #include <time.h>
 
 struct tm *timeinfo;
-String SCHEDULE_POLL_SQL = "SELECT status,food_amt FROM scheduels WHERE (H = ? AND M = ? AND D = ?) OR (H = ? AND M = ? AND D = 7)";
+String SCHEDULE_POLL_SQL = "SELECT status,food_amt FROM schedules WHERE (H = ? AND M = ? AND D = ?) OR (H = ? AND M = ? AND D = 7)";
 
-const char* ssid = "GSU";
-const char* wifi_password = "";
+const char *ssid = "NETGEAR30";
+const char *wifi_password = "perfectskates004";
 
 AsyncWebServer server(8080);
 
 sqlite3 *feeder;
 sqlite3_stmt *res;
-const char* tail;
+const char *tail;
 
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = -18000;
-const int   daylightOffset_sec = 3600;
+const char *ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = -18000;
+const int daylightOffset_sec = 3600;
 
-const char* data = "Callback function called";
-static int callback(void *data, int argc, char **argv, char **azColName){
-   int i;
-   Serial.printf("%s: ", (const char*)data);
-   for (i = 0; i<argc; i++){
-       Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-   }
-   Serial.printf("\n");
-   return 0;
+const char *data = "Callback function called";
+static int callback(void *data, int argc, char **argv, char **azColName)
+{
+  int i;
+  Serial.printf("%s: ", (const char *)data);
+  for (i = 0; i < argc; i++)
+  {
+    Serial.printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+  }
+  Serial.printf("\n");
+  return 0;
 }
 
-int openDb(const char *filename, sqlite3 **db) {
-   int rc = sqlite3_open(filename, db);
-   if (rc) {
-       Serial.printf("Can't open database: %s\n", sqlite3_errmsg(*db));
-       return rc;
-   } else {
-       Serial.printf("Opened database successfully\n");
-   }
-   return rc;
+int openDb(const char *filename, sqlite3 **db)
+{
+  int rc = sqlite3_open(filename, db);
+  if (rc)
+  {
+    Serial.printf("Can't open database: %s\n", sqlite3_errmsg(*db));
+    return rc;
+  }
+  else
+  {
+    Serial.printf("Opened database successfully\n");
+  }
+  return rc;
 }
 
 char *zErrMsg = "";
-int db_exec(sqlite3 *db, const char *sql) {
-   Serial.println(sql);
-   long start = micros();
-   int rc = sqlite3_exec(db, sql, callback, (void*)data, &zErrMsg);
-   if (rc != SQLITE_OK) {
-       Serial.printf("SQL error: %s\n", zErrMsg);
-   } else {
-       Serial.printf("Operation done successfully\n");
-   }
-   Serial.print(F("Time taken:"));
-   Serial.println(micros()-start);
-   return rc;
+int db_exec(sqlite3 *db, const char *sql)
+{
+  Serial.println(sql);
+  long start = micros();
+  int rc = sqlite3_exec(db, sql, callback, (void *)data, &zErrMsg);
+  if (rc != SQLITE_OK || res == NULL)
+  {
+    Serial.printf("SQL error: %s\n", zErrMsg);
+  }
+  else
+  {
+    Serial.printf("Operation done successfully\n");
+  }
+  Serial.print(F("Time taken:"));
+  Serial.println(micros() - start);
+  return rc;
 }
 
-bool check_credentials(int a_id,const char *u_hash,const char *p_hash){
+bool check_credentials(int a_id, const char *u_hash, const char *p_hash)
+{
   String sql = "SELECT A_ID,u_hash,p_hash FROM accounts WHERE A_ID = ? AND u_hash = ? AND p_hash = ?;";
-  int rc = sqlite3_prepare_v2(feeder, sql.c_str(),sql.length()+1,&res,&tail);
-  if (rc != SQLITE_OK) {
-     Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
-     sqlite3_close(feeder);
-     return false;
-   }
-  sqlite3_bind_int(res,1,a_id);
-  sqlite3_bind_text(res,2,u_hash,strlen(u_hash),SQLITE_STATIC);
-  sqlite3_bind_text(res,3,p_hash,strlen(p_hash),SQLITE_STATIC);
+  int rc = sqlite3_prepare_v2(feeder, sql.c_str(), sql.length() + 1, &res, &tail);
+  if (rc != SQLITE_OK || res == NULL)
+  {
+    Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
+    sqlite3_close(feeder);
+    return false;
+  }
+  sqlite3_bind_int(res, 1, a_id);
+  sqlite3_bind_text(res, 2, u_hash, strlen(u_hash), SQLITE_STATIC);
+  sqlite3_bind_text(res, 3, p_hash, strlen(p_hash), SQLITE_STATIC);
   bool row = false;
-  while(sqlite3_step(res) == SQLITE_ROW){
+  while (sqlite3_step(res) == SQLITE_ROW)
+  {
     row = true;
   }
   sqlite3_clear_bindings(res);
@@ -80,18 +93,21 @@ bool check_credentials(int a_id,const char *u_hash,const char *p_hash){
   return row;
 };
 
-void insert_account(int a_id,const char*  u_hash, const char*  p_hash){
+void insert_account(int a_id, const char *u_hash, const char *p_hash)
+{
   String sql = "INSERT INTO accounts (A_ID,u_hash,p_hash) VALUES (?,?,?)";
-  int rc = sqlite3_prepare_v2(feeder, sql.c_str(),sql.length()+1,&res,&tail);
-  if (rc != SQLITE_OK) {
+  int rc = sqlite3_prepare_v2(feeder, sql.c_str(), sql.length() + 1, &res, &tail);
+  if (rc != SQLITE_OK || res == NULL)
+  {
     Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
   }
-  sqlite3_bind_int(res,1,a_id);
-  sqlite3_bind_text(res,2,u_hash,strlen(u_hash),SQLITE_STATIC);
-  sqlite3_bind_text(res,3,p_hash,strlen(p_hash),SQLITE_STATIC);
-  if(sqlite3_step(res) != SQLITE_DONE) {
+  sqlite3_bind_int(res, 1, a_id);
+  sqlite3_bind_text(res, 2, u_hash, strlen(u_hash), SQLITE_STATIC);
+  sqlite3_bind_text(res, 3, p_hash, strlen(p_hash), SQLITE_STATIC);
+  if (sqlite3_step(res) != SQLITE_DONE)
+  {
     Serial.printf("ERROR executing stmt: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
@@ -102,16 +118,19 @@ void insert_account(int a_id,const char*  u_hash, const char*  p_hash){
   return;
 };
 
-void delete_account(int a_id){
+void delete_account(int a_id)
+{
   String sql = "DELETE FROM accounts WHERE A_ID = ?;";
-  int rc = sqlite3_prepare_v2(feeder, sql.c_str(),sql.length()+1,&res,&tail);
-  if (rc != SQLITE_OK) {
+  int rc = sqlite3_prepare_v2(feeder, sql.c_str(), sql.length() + 1, &res, &tail);
+  if (rc != SQLITE_OK || res == NULL)
+  {
     Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
   }
-  sqlite3_bind_int(res,1,a_id);
-  if(sqlite3_step(res) != SQLITE_DONE) {
+  sqlite3_bind_int(res, 1, a_id);
+  if (sqlite3_step(res) != SQLITE_DONE)
+  {
     Serial.printf("ERROR executing stmt: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
@@ -120,14 +139,16 @@ void delete_account(int a_id){
   sqlite3_reset(res);
 
   sql = "DELETE FROM schedules WHERE A_ID = ?;";
-  rc = sqlite3_prepare_v2(feeder, sql.c_str(),sql.length()+1,&res,&tail);
-  if (rc != SQLITE_OK) {
+  rc = sqlite3_prepare_v2(feeder, sql.c_str(), sql.length() + 1, &res, &tail);
+  if (rc != SQLITE_OK || res == NULL)
+  {
     Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
   }
-  sqlite3_bind_int(res,1,a_id);
-  if(sqlite3_step(res) != SQLITE_DONE) {
+  sqlite3_bind_int(res, 1, a_id);
+  if (sqlite3_step(res) != SQLITE_DONE)
+  {
     Serial.printf("ERROR executing stmt: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
@@ -135,23 +156,26 @@ void delete_account(int a_id){
   sqlite3_clear_bindings(res);
   sqlite3_reset(res);
   sqlite3_finalize(res);
-  sqlite3_exec(feeder,"VACUUM",0,0,0);
+  sqlite3_exec(feeder, "VACUUM", 0, 0, 0);
   return;
 };
 
-bool check_time_slot(int h,int m,int d){
+bool check_time_slot(int h, int m, int d)
+{
   bool time_slot = false;
   String sql = "SELECT * FROM schedules WHERE H = ? AND M = ? AND D = ?";
-  int rc = sqlite3_prepare_v2(feeder, sql.c_str(),sql.length()+1,&res,&tail);
-  if (rc != SQLITE_OK) {
-     Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
-     sqlite3_close(feeder);
-     return false;
-   }
-  sqlite3_bind_int(res,1,h);
-  sqlite3_bind_int(res,2,m);
-  sqlite3_bind_int(res,3,d);
-  while(sqlite3_step(res) == SQLITE_ROW){
+  int rc = sqlite3_prepare_v2(feeder, sql.c_str(), sql.length() + 1, &res, &tail);
+  if (rc != SQLITE_OK || res == NULL)
+  {
+    Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
+    sqlite3_close(feeder);
+    return false;
+  }
+  sqlite3_bind_int(res, 1, h);
+  sqlite3_bind_int(res, 2, m);
+  sqlite3_bind_int(res, 3, d);
+  while (sqlite3_step(res) == SQLITE_ROW)
+  {
     time_slot = true;
   }
   sqlite3_clear_bindings(res);
@@ -161,22 +185,25 @@ bool check_time_slot(int h,int m,int d){
   return time_slot;
 };
 
-void insert_schedule(int a_id,int h,int m,int d,const char *status, const char *dog, const char *food_amt){
+void insert_schedule(int a_id, int h, int m, int d, const char *status, const char *dog, const char *food_amt)
+{
   String sql = "INSERT INTO schedules (A_ID,H,M,D,status,dog,food_amt) VALUES (?,?,?,?,?,?,?)";
-  int rc = sqlite3_prepare_v2(feeder, sql.c_str(),sql.length()+1,&res,&tail);
-  if (rc != SQLITE_OK) {
-     Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
-     sqlite3_close(feeder);
-     return;
-   }
-  sqlite3_bind_int(res,1,a_id);
-  sqlite3_bind_int(res,2,h);
-  sqlite3_bind_int(res,3,m);
-  sqlite3_bind_int(res,4,d);
-  sqlite3_bind_text(res,5,status,strlen(status),SQLITE_STATIC);
-  sqlite3_bind_text(res,6,dog,strlen(dog),SQLITE_STATIC);
-  sqlite3_bind_text(res,7,food_amt,strlen(food_amt),SQLITE_STATIC);
-  if(sqlite3_step(res) != SQLITE_DONE) {
+  int rc = sqlite3_prepare_v2(feeder, sql.c_str(), sql.length() + 1, &res, &tail);
+  if (rc != SQLITE_OK || res == NULL)
+  {
+    Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
+    sqlite3_close(feeder);
+    return;
+  }
+  sqlite3_bind_int(res, 1, a_id);
+  sqlite3_bind_int(res, 2, h);
+  sqlite3_bind_int(res, 3, m);
+  sqlite3_bind_int(res, 4, d);
+  sqlite3_bind_text(res, 5, status, strlen(status), SQLITE_STATIC);
+  sqlite3_bind_text(res, 6, dog, strlen(dog), SQLITE_STATIC);
+  sqlite3_bind_text(res, 7, food_amt, strlen(food_amt), SQLITE_STATIC);
+  if (sqlite3_step(res) != SQLITE_DONE)
+  {
     Serial.printf("ERROR executing stmt: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
@@ -187,7 +214,8 @@ void insert_schedule(int a_id,int h,int m,int d,const char *status, const char *
   return;
 };
 
-void edit_schedule(int a_id,int h, int m, int d, const char *status, const char *dog, const char *food_amt){
+void edit_schedule(int a_id, int h, int m, int d, const char *status, const char *dog, const char *food_amt)
+{
   String sql = "INSERT INTO schedules (A_ID,H,M,D,status,dog,food_amt) VALUES (?,?,?,?,?,?,?)\ 
                   ON CONFLICT (A_ID) DO UPDATE SET A_ID = ?\
                   ON CONFLICT (H) DO UPDATE SET H = ?\
@@ -196,27 +224,29 @@ void edit_schedule(int a_id,int h, int m, int d, const char *status, const char 
                   ON CONFLICT (status) DO UPDATE SET status = ?\
                   ON CONFLICT (dog) DO UPDATE SET dog = ?\
                   ON CONFLICT (food_amt) DO UPDATE SET food_amt = ?;";
-  int rc = sqlite3_prepare_v2(feeder, sql.c_str(),sql.length()+1,&res,&tail);
-  if (rc != SQLITE_OK) {
-     Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
-     sqlite3_close(feeder);
-     return;
+  int rc = sqlite3_prepare_v2(feeder, sql.c_str(), sql.length() + 1, &res, &tail);
+  if (rc != SQLITE_OK || res == NULL)
+  {
+    Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
+    sqlite3_close(feeder);
+    return;
   }
-  sqlite3_bind_int(res,1,a_id);
-  sqlite3_bind_int(res,2,h);
-  sqlite3_bind_int(res,3,m);
-  sqlite3_bind_int(res,4,d);
-  sqlite3_bind_text(res,5,status, strlen(status),SQLITE_STATIC);
-  sqlite3_bind_text(res,6,dog,strlen(dog),SQLITE_STATIC);
-  sqlite3_bind_text(res,7,food_amt,strlen(food_amt),SQLITE_STATIC);
-  sqlite3_bind_int(res,8,a_id);
-  sqlite3_bind_int(res,9,h);
-  sqlite3_bind_int(res,10,m);
-  sqlite3_bind_int(res,11,d);
-  sqlite3_bind_text(res,12,status,strlen(status),SQLITE_STATIC);
-  sqlite3_bind_text(res,13,dog,strlen(dog),SQLITE_STATIC);
-  sqlite3_bind_text(res,14,food_amt,strlen(food_amt),SQLITE_STATIC);
-  if(sqlite3_step(res) != SQLITE_DONE) {
+  sqlite3_bind_int(res, 1, a_id);
+  sqlite3_bind_int(res, 2, h);
+  sqlite3_bind_int(res, 3, m);
+  sqlite3_bind_int(res, 4, d);
+  sqlite3_bind_text(res, 5, status, strlen(status), SQLITE_STATIC);
+  sqlite3_bind_text(res, 6, dog, strlen(dog), SQLITE_STATIC);
+  sqlite3_bind_text(res, 7, food_amt, strlen(food_amt), SQLITE_STATIC);
+  sqlite3_bind_int(res, 8, a_id);
+  sqlite3_bind_int(res, 9, h);
+  sqlite3_bind_int(res, 10, m);
+  sqlite3_bind_int(res, 11, d);
+  sqlite3_bind_text(res, 12, status, strlen(status), SQLITE_STATIC);
+  sqlite3_bind_text(res, 13, dog, strlen(dog), SQLITE_STATIC);
+  sqlite3_bind_text(res, 14, food_amt, strlen(food_amt), SQLITE_STATIC);
+  if (sqlite3_step(res) != SQLITE_DONE)
+  {
     Serial.printf("ERROR executing stmt: %s\n", sqlite3_errmsg(feeder));
     sqlite3_close(feeder);
     return;
@@ -227,29 +257,69 @@ void edit_schedule(int a_id,int h, int m, int d, const char *status, const char 
   return;
 };
 
-void setup() {
-  configTime(gmtOffset_sec,daylightOffset_sec,ntpServer);
-  pinMode(21,OUTPUT);
-  pinMode(22,OUTPUT);
-  pinMode(17,OUTPUT);
-  digitalWrite(17,HIGH);
-  digitalWrite(21,LOW);
-  digitalWrite(22,LOW);
+void printLocalTime()
+{
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo))
+  {
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  Serial.print("Day of week: ");
+  Serial.println(&timeinfo, "%A");
+  Serial.print("Month: ");
+  Serial.println(&timeinfo, "%B");
+  Serial.print("Day of Month: ");
+  Serial.println(&timeinfo, "%d");
+  Serial.print("Year: ");
+  Serial.println(&timeinfo, "%Y");
+  Serial.print("Hour: ");
+  Serial.println(&timeinfo, "%H");
+  Serial.print("Hour (12 hour format): ");
+  Serial.println(&timeinfo, "%I");
+  Serial.print("Minute: ");
+  Serial.println(&timeinfo, "%M");
+  Serial.print("Second: ");
+  Serial.println(&timeinfo, "%S");
+
+  Serial.println("Time variables");
+  char timeHour[3];
+  strftime(timeHour, 3, "%H", &timeinfo);
+  Serial.println(timeHour);
+  char timeWeekDay[10];
+  strftime(timeWeekDay, 10, "%A", &timeinfo);
+  Serial.println(timeWeekDay);
+  Serial.println();
+};
+
+void setup()
+{
+  WiFi.begin(ssid, wifi_password);
+  delay(2000);
+  Serial.println((WiFi.localIP()));
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
+  pinMode(21, OUTPUT);
+  pinMode(22, OUTPUT);
+  pinMode(17, OUTPUT);
+  digitalWrite(17, HIGH);
+  digitalWrite(21, LOW);
+  digitalWrite(22, LOW);
   Serial.begin(9600);
-  if(!SD.begin()){
+  if (!SD.begin())
+  {
     Serial.println("Card Mount Failed");
     return;
   }
   int rc;
   sqlite3_initialize();
   if (openDb("/sd/feeder.db", &feeder))
-     return;
-  sqlite3_exec(feeder,"DROP activity;",0,0,0);
-  WiFi.begin(ssid, wifi_password);
-  delay(2000);
-  Serial.println((WiFi.localIP()));
+    return;
+  sqlite3_exec(feeder, "DROP activity;", 0, 0, 0);
   // handle http requests with server.on()
-  server.on("/login",HTTP_GET, [] (AsyncWebServerRequest *request){
+  server.on("/login", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     if (request -> hasParam("uh") && request -> hasParam("ph")){
       int a_id = atoi(request -> getParam("a") -> value().c_str());
       String u_hash = request -> getParam("uh") -> value();
@@ -265,9 +335,9 @@ void setup() {
     }
     else{
       request->send(200,"application/json","{\"message\":\"Please input username and password\"}");
-    }
-  });
-  server.on("/login",HTTP_POST, [] (AsyncWebServerRequest *request){
+    } });
+  server.on("/login", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
     if (request -> hasParam("uh") && request -> hasParam("ph")){
       int a_id = atoi(request -> getParam("a") -> value().c_str());
       String u_hash = request -> getParam("uh") -> value();
@@ -285,9 +355,9 @@ void setup() {
     }
     else{
       request->send(200,"application/json","{\"message\":\"Please input username and password\"}");
-    }
-  });
-  server.on("/login",HTTP_DELETE, [] (AsyncWebServerRequest *request){
+    } });
+  server.on("/login", HTTP_DELETE, [](AsyncWebServerRequest *request)
+            {
     if (request -> hasParam("a")){
       int a_id = atoi(request -> getParam("a") -> value().c_str());
       String u_hash = request -> getParam("uh") -> value();
@@ -302,9 +372,9 @@ void setup() {
     }
     else{
       request->send(200,"application/json","{\"message\":\"Error: No account ID given\"}");
-    }
-  });
-  server.on("/feed", HTTP_GET, [] (AsyncWebServerRequest *request){
+    } });
+  server.on("/feed", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     String food_level;
     if (request -> hasParam("amount")){
       food_level = request -> getParam("amount") -> value();
@@ -329,17 +399,17 @@ void setup() {
     }
     digitalWrite(21,LOW);
     digitalWrite(22,LOW);
-    request->send(200,"text/plain",food_level);
-  });
+    request->send(200,"text/plain",food_level); });
 
-  server.on("/schedules", HTTP_GET,[] (AsyncWebServerRequest *request){
+  server.on("/schedules", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     if (request -> hasParam("a")){
       int a_id = atoi(request -> getParam("a") -> value().c_str());
       String resp = "{\"schdules\":[";
       String sql = "SELECT H,M,D,status,dog,food_amt FROM schedules WHERE A_ID = ?";
       sqlite3_bind_int(res,1,a_id);
       int rc = sqlite3_prepare_v2(feeder,sql.c_str(),sql.length()+1,&res,&tail);
-      if (rc != SQLITE_OK) {
+      if (rc != SQLITE_OK || res == NULL) {
         Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
         sqlite3_close(feeder);
         return;
@@ -366,10 +436,10 @@ void setup() {
     }
     else{
       request->send(200,"application/json","{\"message\":\"Error: No account ID given\"}");
-    }
-  });
+    } });
 
-  server.on("/schedules", HTTP_POST,[] (AsyncWebServerRequest *request){
+  server.on("/schedules", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
     if(request -> hasParam("a") && request -> hasParam("h") && request -> hasParam("m") && 
        request -> hasParam("da") && request -> hasParam("s") && request -> hasParam("do") && 
        request -> hasParam("f")){
@@ -390,57 +460,73 @@ void setup() {
     }
     else{
       request->send(200,"application/json","{\"message\":\"Please make sure all fields are filled out\"}");
-    }
-  });
+    } });
   server.begin();
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
-  if(!getLocalTime(timeinfo)){
+  if (timeinfo == NULL)
+  {
+    Serial.println("timeinfo is NULL, allocating memory.");
+    timeinfo = (struct tm *)malloc(sizeof(struct tm));
+  }
+  if (!getLocalTime(timeinfo))
+  {
     Serial.println("Failed to obtain time");
-    if(WiFi.status() != WL_CONNECTED){
+    if (WiFi.status() != WL_CONNECTED)
+    {
       WiFi.begin(ssid, wifi_password);
+      Serial.println((WiFi.localIP()));
     }
     delay(5000);
   }
-  else{
-    int hour = timeinfo -> tm_hour;
-    int minute = timeinfo -> tm_min;
-    int day = timeinfo -> tm_wday;
+  else
+  {
+    int hour = timeinfo->tm_hour;
+    int minute = timeinfo->tm_min;
+    int day = timeinfo->tm_wday;
     const char *food_level;
-    int rc = sqlite3_prepare_v2(feeder, SCHEDULE_POLL_SQL.c_str(),SCHEDULE_POLL_SQL.length()+1,&res,&tail);
-    if (rc != SQLITE_OK) {
+    int rc = sqlite3_prepare_v2(feeder, SCHEDULE_POLL_SQL.c_str(), SCHEDULE_POLL_SQL.length() + 1, &res, &tail);
+    if (rc != SQLITE_OK || res == NULL)
+    {
       Serial.printf("ERROR preparing sql: %s\n", sqlite3_errmsg(feeder));
       delay(5000);
     }
-    else{
-      sqlite3_bind_int(res,1,hour);
-      sqlite3_bind_int(res,2,minute);
-      sqlite3_bind_int(res,3,day);
-      if(sqlite3_step(res) == SQLITE_ROW){
-        if((const char*)sqlite3_column_text(res,0) == "active"){
-          food_level = (const char*)sqlite3_column_text(res,1);
-          if (food_level == "small"){
-            digitalWrite(21,HIGH);
-            digitalWrite(22,LOW);
+    else
+    {
+      sqlite3_bind_int(res, 1, hour);
+      sqlite3_bind_int(res, 2, minute);
+      sqlite3_bind_int(res, 3, day);
+      if (sqlite3_step(res) == SQLITE_ROW)
+      {
+        if (strcmp((const char *)sqlite3_column_text(res, 0), "active") == 0)
+        {
+          food_level = (const char *)sqlite3_column_text(res, 1);
+          if (food_level == "small")
+          {
+            digitalWrite(21, HIGH);
+            digitalWrite(22, LOW);
             delay(2000);
           }
-          else if (food_level == "medium"){
-            digitalWrite(21,HIGH);
-            digitalWrite(22,LOW);
+          else if (food_level == "medium")
+          {
+            digitalWrite(21, HIGH);
+            digitalWrite(22, LOW);
             delay(3000);
           }
-          else if (food_level == "large"){
-            digitalWrite(21,HIGH);
-            digitalWrite(22,LOW);
+          else if (food_level == "large")
+          {
+            digitalWrite(21, HIGH);
+            digitalWrite(22, LOW);
             delay(4000);
           }
         }
       }
       sqlite3_finalize(res);
     }
-  delay(60000);
+    Serial.println("End of loop");
+    delay(60000);
   }
 }
-
