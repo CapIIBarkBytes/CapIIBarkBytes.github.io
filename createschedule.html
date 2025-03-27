@@ -6,26 +6,14 @@
     <title>Automatic Dog Feeder Website</title>
     <link rel="stylesheet" href="style.css">
     <script>
-        function addTimeInput() {
-            var container = document.getElementById("timeContainer");
-            var newInput = document.createElement("p");
-            newInput.innerHTML = '<input type="time" name="times[]" class="time-input">';
-            container.appendChild(newInput);
-        }
-        function toggleSelectAll(source) {
-            checkboxes = document.getElementsByName('days');
-            for (var i = 0; i < checkboxes.length; i++) {
-                checkboxes[i].checked = source.checked;
-            }
-        }
-	
 	// This is prototype code made with the help of the internet. May not work.
 	// Loading form data from choose_schedule.html
 	window.onload = function() {
+	    try {
         	var rowData = JSON.parse(localStorage.getItem("selectedRow"));
         	if (rowData) {
-        	    document.getElementById("name").value = rowData[0];
-        	    document.getElementById("petname").value = rowData[1];
+        	    document.getElementById("name").value = rowData[0] || "";
+        	    document.getElementById("petname").value = rowData[1] || "";
 		    document.getElementById("immapply").checked = rowData[2] === true;
 		    document.getElementById("sunday").checked = rowData[3] === true;
 		    document.getElementById("monday").checked = rowData[4] === true;
@@ -34,21 +22,31 @@
 		    document.getElementById("thursday").checked = rowData[7] === true;
 		    document.getElementById("friday").checked = rowData[8] === true;
 		    document.getElementById("saturday").checked = rowData[9] === true;
-        	    document.getElementById("food").value = rowData[10];
+        	    document.getElementById("food").value = rowData[10] || "";
 
 		    
         	    // Handling multiple time values
         	    let timeArray = rowData[11]; // Assuming time values are stored in index 11 as an array
-        	    if (Array.isArray(timeArray)) {
-        	    let timeContainer = document.getElementById("timeContainer"); // ID of the container
-        	    let timeInputs = timeContainer.getElementsByClassName("time-input"); // Get all time inputs inside the container
-            	    for (let i = 0; i < timeInputs.length; i++) {
-                	    if (timeArray[i]) { // Ensure there's a value to set
-                    	    	timeInputs[i].value = timeArray[i];
-               	    	    }
-           	    }
+            	    if (Array.isArray(timeArray)) {
+                    	let timeContainer = document.getElementById("timeContainer");
+                    	timeArray.forEach(time => {
+                        	let newInput = document.createElement("p");
+                        	newInput.innerHTML = `<input type="time" name="times[]" class="time-input" value="${time}">`;
+                        	timeContainer.appendChild(newInput);
+                    	});
+                    }
         	}
+	    } catch (e) {
+		    console.error("Error loading schedule data:", e);
+	    }
     	};
+        function toggleSelectAll(source) {
+            checkboxes = document.getElementsByName('days');
+            for (var i = 0; i < checkboxes.length; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+	
     </script>
 </head>
 <body>
