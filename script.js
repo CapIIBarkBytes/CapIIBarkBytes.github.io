@@ -55,22 +55,10 @@ burger.addEventListener('click', () => {
 
 navLinks.addEventListener('click', (event) => {
   if (event.target.tagName === 'A') {
-    const targetPage = event.target.dataset.page;
     const linkHref = event.target.href;
 
     // Check if the link is external (different origin)
-    if (linkHref.startsWith(window.location.origin)) {
-      // Internal link: Handle navigation within the site
-      event.preventDefault(); // Prevent default navigation
-      // Hide all pages
-      pages.forEach(page => page.classList.remove('active'));
-      // Show the selected page
-      document.getElementById(targetPage).classList.add('active');
-      // Close the menu on smaller screens
-      if (window.innerWidth <= 768) {
-        navLinks.classList.remove('active');
-      }
-    } else {
+    if (!linkHref.startsWith(window.location.origin)) {
       // External link: Open in a new tab
       event.target.setAttribute('target', '_blank');
     }
