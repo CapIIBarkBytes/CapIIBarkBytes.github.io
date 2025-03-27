@@ -56,13 +56,12 @@ burger.addEventListener('click', () => {
 navLinks.addEventListener('click', (event) => {
   if (event.target.tagName === 'A') {
     const targetPage = event.target.dataset.page;
-    // Check if the link is external (has a full URL)
-    if (event.target.href.startsWith('http')) {
-      // For external links, open in a new tab
-      window.open(event.target.href, '_blank');
-    } else {
-      // For internal links, handle navigation
-      event.preventDefault(); // Prevent default link behavior
+    const linkHref = event.target.href;
+
+    // Check if the link is external (different origin)
+    if (linkHref.startsWith(window.location.origin)) {
+      // Internal link: Handle navigation within the site
+      event.preventDefault(); // Prevent default navigation
       // Hide all pages
       pages.forEach(page => page.classList.remove('active'));
       // Show the selected page
@@ -71,6 +70,9 @@ navLinks.addEventListener('click', (event) => {
       if (window.innerWidth <= 768) {
         navLinks.classList.remove('active');
       }
+    } else {
+      // External link: Open in a new tab
+      event.target.setAttribute('target', '_blank');
     }
   }
 });
