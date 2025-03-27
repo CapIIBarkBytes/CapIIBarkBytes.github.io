@@ -40,6 +40,12 @@
 		    console.error("Error loading schedule data:", e);
 	    }
     	};
+	function addTimeInput() {
+            var container = document.getElementById("timeContainer");
+            var newInput = document.createElement("p");
+            newInput.innerHTML = '<input type="time" name="times[]" class="time-input">';
+            container.appendChild(newInput);
+        }
         function toggleSelectAll(source) {
             checkboxes = document.getElementsByName('days');
             for (var i = 0; i < checkboxes.length; i++) {
