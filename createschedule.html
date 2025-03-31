@@ -84,7 +84,7 @@
             <h1 style="color: brown;">CREATE A SCHEDULE</h1>
             <p style="font-size: large; color: brown;">Create a new feeding schedule for your pet (or edit an existing one)</p>
             <p>&nbsp;</p>
-		<form action="submit_schedule.js" method="post" style="font-weight: bolder;">
+		<form style="font-weight: bolder;">
 			<p>Enter schedule name: <input name="schedule_name" type="text" id="name" class="input-box"/></p>
 			<p>Name of pet: <input name="dog_name" type="text" id="petname" class="input-box"/></p>
 			<p><input name="Checkbox1" type="checkbox" id="immapply"/> Apply schedule immediately?</p>
@@ -104,7 +104,7 @@
             		<p><input type="time" name="times[]" class="time-input"></p>
         		</div>
         		<p><input type="button" value="Add Another Time" onclick="addTimeInput()" class="more-buttons" /></p>
-        		<p><input name="submit_schedule" type="submit" value="Submit New Schedule" class="more-buttons" /></p>
+        		<p><input id="postSubmit" type="submit" value="Submit New Schedule" class="more-buttons" /></p>
     		</form>
     		<p>&nbsp;</p>
 		</section>
@@ -114,5 +114,6 @@
 
 			
 	<script src="script.js"></script>
+	<script src="submit_schedule.js"></script>
 </body>
 </html>
