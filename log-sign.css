@@ -18,7 +18,8 @@ html, body, .log-container, #row {
 }
 .header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin: 0 0 1% 0;
     padding-right: 1%;
     height: 10%;
@@ -32,6 +33,12 @@ h1, h2, h3, p {
     display: flex;
     justify-content: flex-start;
     margin-left: 10%;
+}
+.header a {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: 1%;
 }
 h3 {
     /*styling*/
