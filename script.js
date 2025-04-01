@@ -93,3 +93,4 @@ dispenseButtons.forEach(button => {
 
 // Initial page load (optional): Show the home page by default
 document.getElementById('home').classList.add('active');
+

@@ -3,7 +3,7 @@
     <head>
         <meta charset = "UTF 8">
         <title>Sign Up | Bark Bytes</title>
-        <link rel = "stylesheet" href = "style1.css">
+        <link rel = "stylesheet" href = "log-sign.css">
     </head>
     <body>
         <div class = "header"><h1>Bark Bytes</h1></div>
@@ -16,14 +16,17 @@
             <div class = "log-space"> 
                 <h3>Sign Up</h3>
                 <div id = "link">Already have an account?&nbsp;<a href = "login.html">Log In!</a></div>
-                <input type = "username" id = "username" name = "username" placeholder = "please enter your username..." required>
-                <input type = "password" id = "password" name = "password" placeholder = "password..." required>
-                <img src = "images/rilo.jpg" alt = "Rilo" class = rilo>
-                <div class = "text">Ruff, I'm Rilo! I don't recognize your smell...</div>
-                <button onclick = "window.location.href = 'index.html';">Sign Up</button>
+                <form id = "sign-form">
+                <input type = "username" id = "sign-username" name = "username" placeholder = "please enter your username...">
+                <input type = "password" id = "sign-password" name = "password" placeholder = "password...">
+                <img src = "images/img5.webp" alt = "Logo" class = logo>
+                <div class = "text">We don't recognize your scent...hello!</div>
+                <input type = "submit" class = "submit" name = "submit" value = "Sign Up">
+                </form>
             </div>
             </div>
             <div class = bottom-border></div>
         </div>
+        <script src="log-sign-script.js" defer></script>
     </body>
 </html>

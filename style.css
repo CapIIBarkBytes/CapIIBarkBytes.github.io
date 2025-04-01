@@ -7,11 +7,9 @@ nav {
     background-color: white; /* Light gray background */ /* changed to white */
     border-radius: 10px; /* rounded border eges */
     margin: .5% 0 .5% 0;
-    border: solid 5px brown;
-}
-nav:hover {
     border: dashed 5px brown;
 }
+
 body {
     height: 100%;
     background-color: rgb(244, 193, 84);

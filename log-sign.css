@@ -36,6 +36,7 @@ h1, h2, h3, p {
 h3 {
     /*styling*/
     font-size: 200%;
+    margin: 3% 0 7% 10%;
 }
 p {
     /*styling*/
@@ -63,7 +64,7 @@ p {
 
 .log-space {       /* interactive signup/login box on the left side of the window */
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     flex-direction: column;
     margin: 0 8% 0 auto;
     padding: 2% 0 2% 0;
@@ -75,45 +76,46 @@ p {
     border: 5px dashed brown;
     border-radius: 30px;
 }
-.rilo {
+.logo {
     display: flex;
-    margin: auto;
-    width: 20%;
+    margin: 1.5% auto 1% auto;
+    width: 35%;
     height: auto;
     /*styling*/
     cursor: pointer;
 }
 .text {         
     display: none;        /* initially hides text box until hover */
-    right: 40%;
     margin: auto;
     /*styling*/
     font-size: small;
 }
-.rilo:hover + .text {         /* displays text box of dog speaking when hovered over */
+.logo:hover + .text {         /* displays text box of logo speaking when hovered over */
     display: block;
+    text-align: center;
 }
 #link {         /* link that directs you back to sign up/log in page*/
     display: flex;
     justify-content: flex-end;
-    margin: 0 10% 5% 0;
+    margin: 0 5% 2% 0;
 }
 input {         /* controls both username and password entry */
+    display: flex;
     margin: 0 auto 1% auto;
     padding-left: 3%;
     width: 90%;
-    height: 10%;
+    height: 18%;
     /*styling*/
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     border: 1px solid black;
     border-radius: 20px;
 }
-button {           /* signup/login button depending on current tab*/
+.submit {           /* signup/login button depending on current tab*/
     display: flex;
     justify-content: center;
     align-items: center;
     width: 50%;
-    height: 12%;
+    height: 20%;
     /*styling*/
     font-size: large;
     font-weight: bold;
@@ -121,11 +123,10 @@ button {           /* signup/login button depending on current tab*/
     color: white;
     border: 2px solid brown;
     border-radius: 30px;
-    margin: auto;
     cursor: pointer;
     font-family:'Courier New', Courier, monospace;
 }
-button:hover {       /* brightens color of signup/login button when hovered over */
+.submit:hover {       /* brightens color of signup/login button when hovered over */
     /*styling*/
     background-color: brown;
 }
